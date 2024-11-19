@@ -1,59 +1,37 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 
 export const AuthContext = createContext({
-  loading: false,
   user: null,
   signUserIntoApp: () => {},
   signUserOutOfApp: () => {},
 });
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState();
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const signUserIntoApp = (user) => {
     setUser(user);
-    // window.localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
   const signUserOutOfApp = () => {
     setUser(null);
-    // window.localStorage.removeItem("user");
+    localStorage.removeItem("user");
   };
 
-  // useEffect(() => {
-  //   const persistedUser = window.localStorage.getItem("user");
-  //   if (persistedUser) {
-  //     setUser(JSON.parse(persistedUser));
-  //   }
-  // }, []);
-
-  useEffect(() => {
-    // loading should be true
-    setLoading(true);
-    const unSubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-      if (user) signUserIntoApp(user);
-      else signUserOutOfApp;
-
-      // loading should be false
-      setLoading(false);
-    });
-
-    return () => {
-      unSubscribe();
-    };
-  }, []);
+  const contextValue = useMemo(
+    () => ({ user, signUserIntoApp, signUserOutOfApp }),
+    [user]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        loading,
-        user,
-        signUserOutOfApp,
-        signUserIntoApp,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
