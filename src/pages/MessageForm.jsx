@@ -1,5 +1,5 @@
 import Button from "../components/Button";
-import { Link, useLoaderData, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
@@ -40,7 +40,7 @@ function NonUser({ username }) {
 
 const MessageForm = () => {
   const { username } = useParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [fetchedUser, setFetchedUser] = useState(null);
   const navigate = useNavigate();
@@ -67,9 +67,8 @@ const MessageForm = () => {
       setProcessing(true);
       await api.post("/message/create", { username, message });
       setMessage("");
+      navigate("/auth/register?referrer=message-form");
       toast.success("Your response has been saved anonymously");
-      signUserOutOfApp();
-      navigate("/auth/register?referrer=message-form", { replace: true });
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -88,10 +87,6 @@ const MessageForm = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (user) {
-        signUserOutOfApp();
-      }
-      setLoading(true);
       try {
         const user = await checkUser();
         setFetchedUser(user);
@@ -104,10 +99,10 @@ const MessageForm = () => {
     };
 
     fetchData();
-  }, [username]);
+  }, []);
 
   if (loading) return <div>Loading user details...</div>;
-  if (!fetchedUser) return <NonUser username={username} />;
+  if (!loading && !fetchedUser) return <NonUser username={username} />;
 
   return (
     <div className="flex justify-center items-center text-white bg-gradient-to-r from-[rgb(167,49,167)] from-25% to-[#7a4cc4]">
@@ -158,7 +153,6 @@ const MessageForm = () => {
           </>
         )}
       </div>
-      <Toaster />
     </div>
   );
 };

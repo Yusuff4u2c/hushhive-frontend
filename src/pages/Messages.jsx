@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   FaLongArrowAltLeft,
   FaLongArrowAltRight,
@@ -6,7 +6,6 @@ import {
 } from "react-icons/fa";
 import Button from "../components/Button";
 import { useState, useEffect } from "react";
-import useAuth from "../hooks/useAuth";
 import dayjs from "dayjs";
 import api from "../data/api";
 
@@ -34,11 +33,16 @@ function Messages() {
       try {
         const response = await api.get("/message");
         setMessageDetails(response.data.messages);
-      } catch (error) {
-        console.log(error);
-      }
+        console.log(response.data.messages);
+      } catch (error) {}
     };
     fetchMessages();
+
+    const interval = setInterval(fetchMessages, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -66,9 +70,6 @@ function Messages() {
                     {dayjs(message.created_at).format("DD MMM YYYY hh:mm A")}
                   </p>
                 </div>
-                {/* {messageDetails.map((message, index) => (
-              <p key={index}>{message.created_at.}</p>
-            ))} */}
 
                 <Btn title="✨ Share Response ✨" />
                 <Btn title="More Options" />

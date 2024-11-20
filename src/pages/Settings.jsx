@@ -22,7 +22,8 @@ const Settings = () => {
 
   async function handleLogOut() {
     try {
-      await api.post("/auth/logout");
+      await api.post("/auth/logout", {});
+      localStorage.removeItem("accessToken");
       signUserOutOfApp();
       console.log("Signed Out");
 
@@ -43,11 +44,6 @@ const Settings = () => {
         </div>
         <h1 className="text-4xl">Settings</h1>
         <div className="border-b-2 border-[rgb(142,28,177)] flex flex-col pb-6 text-center">
-          <Button className={"w-[90%] sm:w-full"}>
-            <div className="flex justify-center gap-3 items-center">
-              View Archived Answers <FaToolbox />
-            </div>
-          </Button>
           <Link to="/auth/change-email">
             <Button className={"w-[90%] sm:w-full"}>
               <div className="flex justify-center gap-3 items-center">
@@ -63,13 +59,6 @@ const Settings = () => {
             </Button>
           </Link>
 
-          <Link to="/change-username">
-            <Button className={"w-[90%] sm:w-full"}>
-              <div className="flex justify-center gap-3 items-center">
-                Change Username <FaUser />
-              </div>
-            </Button>
-          </Link>
           <Link to="/disclaimer">
             <Button className={"w-[90%] sm:w-full"}>
               <div className="flex justify-center gap-3 items-center">

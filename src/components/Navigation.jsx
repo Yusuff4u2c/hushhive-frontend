@@ -32,10 +32,10 @@ const Navigation = () => {
           <div className="absolute top-12 bg-white text-black shadow-lg rounded-md z-10">
             <ul>
               <li className="hover:bg-gradient-to-r from-[#be62be] to-[#7b45d3] hover:text-white px-6 py-2">
-                <Link to="/login">LOG IN</Link>
+                <Link to="/auth/login">LOG IN</Link>
               </li>
               <li className="hover:bg-gradient-to-r from-[#be62be] to-[#7b45d3] hover:text-white px-6 py-2">
-                <Link to="/register">REGISTER</Link>
+                <Link to="/auth/register">REGISTER</Link>
               </li>
             </ul>
           </div>

@@ -1,11 +1,13 @@
 import axios from "axios";
+const baseUrl = import.meta.env.VITE_APP_URL;
 
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: baseUrl,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
@@ -18,6 +20,38 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const { data } = await api.post(
+          "/auth/refresh_token",
+          {},
+          { withCredentials: true }
+        );
+
+        const { accessToken } = data;
+
+        localStorage.setItem("accessToken", accessToken);
+
+        originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
+        return api(originalRequest);
+      } catch (err) {
+        console.error("Token refresh failed", err);
+        localStorage.removeItem("accessToken");
+        window.location.href = "/auth/login";
+      }
+    }
+
+    throw error;
   }
 );
 

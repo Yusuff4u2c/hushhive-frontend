@@ -4,7 +4,10 @@ import useAuth from "../hooks/useAuth";
 const AuthRoute = () => {
   const { user } = useAuth();
 
-  return user ? <Navigate to="/auth/home" replace /> : <Outlet />;
+  if (user) {
+    return <Navigate to="/auth/home" replace={true} />;
+  }
+  return <Outlet />;
 };
 
 export default AuthRoute;

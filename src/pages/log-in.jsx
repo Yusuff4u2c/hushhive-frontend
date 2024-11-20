@@ -4,11 +4,10 @@ import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
-
+import { useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import Input from "../components/Input";
-// import { useState } from "react";
 import api from "../data/api";
 import useAuth from "../hooks/useAuth";
 
@@ -21,7 +20,7 @@ const logInSchema = Yup.object().shape({
 
 const Login = () => {
   const navigate = useNavigate();
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { signUserIntoApp } = useAuth();
   // console.log("login : ", signUserIntoApp);
 
@@ -35,14 +34,13 @@ const Login = () => {
       password: "",
     },
     resolver: yupResolver(logInSchema),
-  }); // 1
+  });
 
   async function onSubmit(data) {
     try {
-      // setLoading(true);
+      setLoading(true);
       const response = await api.post("/auth/login", data);
       const { accessToken } = response.data;
-      // console.log("token : ", accessToken);
       localStorage.setItem("accessToken", accessToken);
 
       signUserIntoApp(response.data.user);
@@ -53,7 +51,7 @@ const Login = () => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   }
 
@@ -96,13 +94,13 @@ const Login = () => {
                 error={errors.password?.message}
               />
             </div>
-            <Button type="submit">
+            <Button type="submit" disabled={loading}>
               <div className="flex justify-center gap-3 items-center">
-                Log in <FaLongArrowAltRight />
+                {loading ? "Logging in..." : "Log in"} <FaLongArrowAltRight />
               </div>
             </Button>
           </form>
-          <Link to="/forgotpassword" className="text-gray-500">
+          <Link to="/auth/forgotpassword" className="text-gray-500">
             Forgot Password
           </Link>
           <Link to="/auth/register" className="text-gray-500 my-0">

@@ -11,6 +11,8 @@ import MessageForm from "./pages/MessageForm";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute";
+import ChangePassword from "./pages/ChangePassword";
+import { Toaster } from "react-hot-toast";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +47,12 @@ const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [{ path: "", element: <Settings /> }],
   },
+
+  {
+    path: "auth/change-password",
+    element: <ProtectedRoute />,
+    children: [{ path: "", element: <ChangePassword /> }],
+  },
   { path: "/:username", element: <MessageForm /> },
 ]);
 
@@ -53,6 +61,7 @@ export default function App() {
     <AppProvider>
       <AuthProvider>
         <RouterProvider router={router} />
+        <Toaster />
       </AuthProvider>
     </AppProvider>
   );
