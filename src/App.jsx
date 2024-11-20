@@ -5,7 +5,7 @@ import { AppProvider } from "./contexts/AppContext";
 import ErrorPage from "./error-page";
 import Login from "./pages/log-in";
 import Home from "./pages/Home";
-import Messages from "./pages/messages";
+import Messages from "./pages/Messages";
 import { AuthProvider } from "./contexts/AuthContext";
 import MessageForm from "./pages/MessageForm";
 import Settings from "./pages/Settings";
