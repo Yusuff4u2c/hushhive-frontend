@@ -7,6 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Input from "../components/Input";
 import { useForm } from "react-hook-form";
 import api from "../data/api";
+import { useState } from "react";
 
 const regSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -52,6 +53,7 @@ const YourTurn = () => {
 const Registration = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
   const {
     handleSubmit,
     register,
@@ -67,11 +69,20 @@ const Registration = () => {
 
   async function onSubmit(data) {
     try {
-      await api.post("/auth/register", data);
-      toast.success("User Registration Complete. Proceed to Login");
+      setLoading(true);
+      const response = await api.post("api/auth/register", data);
+      console.log(response);
+      setLoading(false);
+      toast.success(response.data.message);
       navigate("/auth/login");
     } catch (error) {
-      toast.error(error.message);
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "An unexpected error occurred."
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -125,8 +136,14 @@ const Registration = () => {
               error={errors.password?.message}
             />
           </div>
-
-          <Button type="submit">Register Account</Button>
+          <Button
+            type="submit"
+            className={`${
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-purple-600"
+            }`}
+          >
+            {loading ? "Registering..." : "Register Account"}
+          </Button>
         </form>
         <a className="text-gray-500" href="#">
           Already Have an Account? Log in

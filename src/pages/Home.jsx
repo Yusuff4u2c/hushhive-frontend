@@ -17,8 +17,7 @@ const Home = () => {
   const { user } = useAuth();
   const appUrl = import.meta.env.VITE_APP_URL;
   const [, copy] = useCopyToClipboard();
-  const userUrl = `${appUrl}/${user?.username || "GUEST"}`;
-
+  const userUrl = `${appUrl}/users/${user?.username || "GUEST"}`;
 
   const handleClick = (platform) => {
     const defaultMessage =
@@ -51,15 +50,15 @@ const Home = () => {
             </h1>
             <span className="flex items-center gap-1 text-[12px]">
               <a
-                href={`/${user?.username || "GUEST"}`}
+                href={`/users/${user?.username || "GUEST"}`}
                 rel="noreferrer"
                 target="_blank"
               >
-                {appUrl}/{user?.username || "GUEST"}
+                {appUrl}/users/{user?.username || "GUEST"}
               </a>
               <FaClipboard
                 onClick={() => {
-                  if (copy(`${appUrl}/${user?.username || "GUEST"}`)) {
+                  if (copy(`${appUrl}/users/${user?.username || "GUEST"}`)) {
                     toast("URL copied to clipboard");
                   }
                 }}
@@ -75,7 +74,7 @@ const Home = () => {
             </p>
           </div>
           <div className="border-b-2 w-full flex flex-col pb-6 text-center">
-            <Link to="/auth/messages">
+            <Link to="/dashboard/messages">
               <Button className={"w-full"}>
                 <div className="flex justify-center gap-3 items-center">
                   View Messages <FaLongArrowAltRight />
@@ -111,7 +110,7 @@ const Home = () => {
               <FaTwitter className="hover:-translate-x-3" /> Share on Twitter
             </a>
           </div>
-          <Link to="/auth/settings" className="w-full">
+          <Link to="/dashboard/settings" className="w-full">
             <Button className={"w-full"}>
               <div className="flex justify-center gap-3 items-center">
                 Settings <FaCogs />

@@ -5,7 +5,7 @@ const AuthRoute = () => {
   const { user } = useAuth();
 
   if (user) {
-    return <Navigate to="/auth/home" replace={true} />;
+    return <Navigate to="/dashboard" replace={true} />;
   }
   return <Outlet />;
 };

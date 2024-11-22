@@ -65,7 +65,7 @@ const MessageForm = () => {
 
     try {
       setProcessing(true);
-      await api.post("/message/create", { username, message });
+      await api.post("/api/messages/create", { username, message });
       setMessage("");
       navigate("/auth/register?referrer=message-form");
       toast.success("Your response has been saved anonymously");
@@ -78,7 +78,7 @@ const MessageForm = () => {
 
   async function checkUser() {
     try {
-      const response = await api.get(`/user/${username}`);
+      const response = await api.get(`/api/users/${username}`);
       return response?.data?.user || null;
     } catch (error) {
       throw new Error("Failed to fetch user");

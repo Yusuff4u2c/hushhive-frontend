@@ -22,7 +22,7 @@ const Settings = () => {
 
   async function handleLogOut() {
     try {
-      await api.post("/auth/logout", {});
+      await api.post("/api/auth/logout", {});
       localStorage.removeItem("accessToken");
       signUserOutOfApp();
       console.log("Signed Out");
@@ -44,14 +44,14 @@ const Settings = () => {
         </div>
         <h1 className="text-4xl">Settings</h1>
         <div className="border-b-2 border-[rgb(142,28,177)] flex flex-col pb-6 text-center">
-          <Link to="/auth/change-email">
+          <Link to="/dashboard/change-email">
             <Button className={"w-[90%] sm:w-full"}>
               <div className="flex justify-center gap-3 items-center">
                 Change Email <FaEnvelope />
               </div>
             </Button>
           </Link>
-          <Link to="/auth/change-password">
+          <Link to="/dashboard/change-password">
             <Button className={"w-[90%] sm:w-full"}>
               <div className="flex justify-center gap-3 items-center">
                 Change Password <FaKey />
@@ -78,7 +78,7 @@ const Settings = () => {
             </div>
           </Button>
         </div>
-        <Link to="/auth/home">
+        <Link to="/dashboard">
           <Button>
             <div className="flex w-full justify-center gap-3 items-center">
               <FaLongArrowAltLeft /> Go Back

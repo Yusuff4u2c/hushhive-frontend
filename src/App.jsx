@@ -5,13 +5,14 @@ import { AppProvider } from "./contexts/AppContext";
 import ErrorPage from "./error-page";
 import Login from "./pages/log-in";
 import Home from "./pages/Home";
-import Messages from "./pages/Messages";
+import Messages, { loader as messageLoader } from "./pages/Messages";
 import { AuthProvider } from "./contexts/AuthContext";
 import MessageForm from "./pages/MessageForm";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute";
 import ChangePassword from "./pages/ChangePassword";
+import ChangeEmail from "./pages/ChangeEmail";
 import { Toaster } from "react-hot-toast";
 
 const router = createBrowserRouter([
@@ -31,29 +32,17 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "auth/home",
+    path: "dashboard",
     element: <ProtectedRoute />,
-    children: [{ path: "", element: <Home /> }],
+    children: [
+      { path: "", element: <Home /> },
+      { path: "messages", element: <Messages />, loader: messageLoader },
+      { path: "settings", element: <Settings /> },
+      { path: "change-password", element: <ChangePassword /> },
+      { path: "change-email", element: <ChangeEmail /> },
+    ],
   },
-
-  {
-    path: "auth/messages",
-    element: <ProtectedRoute />,
-    children: [{ path: "", element: <Messages /> }],
-  },
-
-  {
-    path: "auth/settings",
-    element: <ProtectedRoute />,
-    children: [{ path: "", element: <Settings /> }],
-  },
-
-  {
-    path: "auth/change-password",
-    element: <ProtectedRoute />,
-    children: [{ path: "", element: <ChangePassword /> }],
-  },
-  { path: "/:username", element: <MessageForm /> },
+  { path: "/users/:username", element: <MessageForm /> },
 ]);
 
 export default function App() {

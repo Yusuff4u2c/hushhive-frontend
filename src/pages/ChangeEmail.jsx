@@ -1,12 +1,11 @@
 import { FaLongArrowAltLeft, FaLongArrowAltRight } from "react-icons/fa";
 import logoIcon from "../assets/image/logo-icon.png";
-import Button from "../components/button";
+import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import Input from "../components/input";
+import Input from "../components/Input";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { AuthenticationService } from "../libs/services/AuthenticationService";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
 
@@ -36,8 +35,7 @@ const ChangeEmail = () => {
 
   async function onSubmit(data) {
     try {
-      AuthenticationService.updateEmail(data);
-      AuthenticationService.logout();
+      await api.post("/api/auth/change-email", data);
       signUserOutOfApp();
 
       toast.success("Email changed. You are required to login again");
@@ -61,30 +59,6 @@ const ChangeEmail = () => {
           onSubmit={handleSubmit(onSubmit)}
         >
           <div>
-            <label htmlFor="email">Current Email</label> <br />
-            <Input
-              type="email"
-              id="new-email"
-              placeholder="your current email"
-              name="email"
-              {...register("email")}
-              error={errors.email?.message}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="email">Password</label> <br />
-            <Input
-              type="password"
-              id="password"
-              placeholder="password"
-              name="password"
-              {...register("password")}
-              error={errors.password?.message}
-            />
-          </div>
-
-          <div>
             <label htmlFor="email">Enter New Email</label> <br />
             <Input
               type="email"
@@ -98,7 +72,7 @@ const ChangeEmail = () => {
 
           <Button type="submit">Update Email</Button>
         </form>
-        <Link to="/settings">
+        <Link to="/dashboard/settings">
           <Button className=" my-3">
             <div className="flex w-full justify-center gap-3 items-center">
               <FaLongArrowAltLeft /> Go Back

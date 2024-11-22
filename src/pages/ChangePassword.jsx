@@ -24,9 +24,9 @@ const ChangePassword = () => {
       return;
     }
     try {
-      await api.post("/auth/change_password", { newPassword });
+      await api.post("/api/auth/change_password", { newPassword });
       toast.success("Password changed successfully!");
-      navigate("/settings");
+      navigate("/dashboard/settings");
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred.");
     }

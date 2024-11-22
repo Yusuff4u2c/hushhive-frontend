@@ -39,7 +39,7 @@ const Login = () => {
   async function onSubmit(data) {
     try {
       setLoading(true);
-      const response = await api.post("/auth/login", data);
+      const response = await api.post("/api/auth/login", data);
       const { accessToken } = response.data;
       localStorage.setItem("accessToken", accessToken);
 
@@ -47,7 +47,7 @@ const Login = () => {
 
       toast.success("Login Succesful");
 
-      navigate("/auth/home");
+      navigate("/dashboard");
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -100,7 +100,7 @@ const Login = () => {
               </div>
             </Button>
           </form>
-          <Link to="/auth/forgotpassword" className="text-gray-500">
+          <Link to="/dashbord/forgotpassword" className="text-gray-500">
             Forgot Password
           </Link>
           <Link to="/auth/register" className="text-gray-500 my-0">

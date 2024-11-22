@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import {
   FaLongArrowAltLeft,
   FaLongArrowAltRight,
@@ -8,6 +8,15 @@ import Button from "../components/Button";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import api from "../data/api";
+
+export async function loader() {
+  try {
+    const response = await api.get("/api/messages");
+    return response.data.messages;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || error.message);
+  }
+}
 
 const Btn = ({ className, title, ...others }) => {
   return (
@@ -24,25 +33,24 @@ const Btn = ({ className, title, ...others }) => {
 };
 
 function Messages() {
+  const loaderMessages = useLoaderData();
+  const [messageDetails, setMessageDetails] = useState(loaderMessages);
   const [paragraphVisibility, setParagraphVisibility] = useState(false);
-  const [messageDetails, setMessageDetails] = useState([]);
-  // const { user } = useAuth();
+  const [error, setError] = useState(null);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await api.get("/api/messages");
+      setMessageDetails(response.data.messages || []);
+    } catch (err) {
+      console.error("Error fetching messages:", err);
+      setError(err.response?.data?.message || err.message);
+    }
+  };
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await api.get("/message");
-        setMessageDetails(response.data.messages);
-        console.log(response.data.messages);
-      } catch (error) {}
-    };
-    fetchMessages();
-
     const interval = setInterval(fetchMessages, 5000);
-
-    return () => {
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -54,52 +62,58 @@ function Messages() {
           👇 Scroll 👇 down to check out the messages that you <br />
           have received
         </p>
-        <div className=" flex flex-col pb-6 text-center">
-          {messageDetails &&
+
+        <div className="flex flex-col pb-6 text-center">
+          {error && <p className="text-red-500">Error: {error}</p>}
+
+          {messageDetails.length === 0 ? (
+            <p>No messages found. Ask your friends to send more!</p>
+          ) : (
             messageDetails.map((message, index) => (
               <div
                 key={index}
                 className="border text-start my-3 border-[#5fdee2] p-5 rounded-xl"
               >
                 <p className="font-bold">Message:</p>
-
                 <div>
-                  <p>{message.message}</p>{" "}
+                  <p>{message.message}</p>
                   <p>
                     Anonymous -{" "}
                     {dayjs(message.created_at).format("DD MMM YYYY hh:mm A")}
                   </p>
                 </div>
-
                 <Btn title="✨ Share Response ✨" />
                 <Btn title="More Options" />
               </div>
-            ))}
+            ))
+          )}
 
           <div className="border border-[#5fdee2] p-5 rounded-xl">
-            <p>You Have Reached The End! 🏁</p>{" "}
+            <p>You Have Reached The End! 🏁</p>
             <p>
               🙋 Ask your friends to send more messages or view <br /> Archived
-              Messaged
+              Messages
             </p>
           </div>
 
           <Button className="w-full mb-3">
-            <div className="flex  justify-center gap-3 items-center">
+            <div className="flex justify-center gap-3 items-center">
               View More Answers <FaLongArrowAltRight />
             </div>
           </Button>
-          <Link to="/auth/home">
-            <Button className=" w-full my-3">
-              <div className="flex w-full justify-center gap-3 items-center">
+
+          <Link to="/dashboard">
+            <Button className="w-full my-3">
+              <div className="flex justify-center gap-3 items-center">
                 <FaLongArrowAltLeft /> Go Back
               </div>
             </Button>
           </Link>
+
           <Btn
             onClick={() => setParagraphVisibility(!paragraphVisibility)}
             title={
-              <div className="flex w-full justify-center gap-3 items-center">
+              <div className="flex justify-center gap-3 items-center">
                 HushHive Messages <FaAngleDown />
               </div>
             }
