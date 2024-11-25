@@ -68,7 +68,7 @@ const Login = () => {
             anonymous messages to your friends for free.
           </p>
           <form method="post" noValidate>
-            onSubmit={handleSubmit(onSubmit)} // 2. >
+            onSubmit={handleSubmit(onSubmit)} // 2.
             <div className="mb-5">
               <label htmlFor="user-name">Your Email</label> <br />
               <Input
