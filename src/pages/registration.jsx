@@ -1,91 +1,84 @@
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
+import { useState } from "react";
+import { Form, Link, useNavigation, useSearchParams } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import logoIcon from "../assets/image/logo-icon.png";
 import Button from "../components/Button";
-import { Form, Link, useNavigate, useSearchParams } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
 import Input from "../components/Input";
-import { useForm } from "react-hook-form";
+import * as Yup from "yup";
 import api from "../data/api";
-import { useState } from "react";
 
 const regSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
-    .min(5, "password must be at least 5 characters")
-    .required("password is required"),
+    .min(5, "Password must be at least 5 characters")
+    .required("Password is required"),
 });
+
+export async function action({ request }) {
+  const formData = new URLSearchParams(await request.text());
+  const data = Object.fromEntries(formData.entries());
+
+  try {
+    await regSchema.validate(data, { abortEarly: false });
+
+    const response = await api.post("/api/auth/register", data);
+
+    if (response.data.success) {
+      toast.success(response.data.message);
+      return { redirect: "/auth/login" };
+    } else {
+      throw new Error(response.data.message || "Registration failed");
+    }
+  } catch (error) {
+    if (error instanceof Yup.ValidationError) {
+      const validationErrors = error.inner.reduce((acc, err) => {
+        acc[err.path] = err.message;
+        return acc;
+      }, {});
+      return { errors: validationErrors };
+    } else {
+      toast.error(error.message || "An unexpected error occurred.");
+      return {
+        errors: { form: error.message || "An unexpected error occurred." },
+      };
+    }
+  }
+}
 
 const YourTurn = () => {
   return (
-    <>
-      <div className="bg-[#c1bca9] text-center px-8 py-3 rounded-lg">
-        <h1 className="text-xl pb-3 border-b text-[#61562a]">How to Play?</h1>
-        <div className="text-green-700  pt-3">
-          <p>
-            ►<span className="font-bold">Register your Account</span> NOW!!
-            👇👇👇
-          </p>
-          <p>
-            ► Share your <span className="font-bold">Dare Link</span> with
-            others
-          </p>
-          <p>
-            ► Recieve{" "}
-            <span className="font-bold">
-              anonymous compliments and secret <br />
-              messages
-            </span>{" "}
-            from your friends.
-          </p>
-        </div>
+    <div className="bg-[#c1bca9] text-center px-8 py-3 rounded-lg">
+      <h1 className="text-xl pb-3 border-b text-[#61562a]">How to Play?</h1>
+      <div className="text-green-700 pt-3">
+        <p>
+          ► <span className="font-bold">Register your Account</span> NOW!!
+          👇👇👇
+        </p>
+        <p>
+          ► Share your <span className="font-bold">Dare Link</span> with others
+        </p>
+        <p>
+          ► Receive{" "}
+          <span className="font-bold">
+            anonymous compliments and secret messages
+          </span>{" "}
+          from your friends.
+        </p>
       </div>
       <p className="text-green-600">
-        {" "}
-        Now it's your turn to create an account and dare <br /> your friends to
-        tell you what they think about you!
+        Now it's your turn to create an account and dare your friends to tell
+        you what they think about you!
       </p>
-    </>
+    </div>
   );
 };
 
 const Registration = () => {
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const navigation = useNavigation();
   const [searchParams] = useSearchParams();
-  const [loading, setLoading] = useState(false);
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-    },
-    resolver: yupResolver(regSchema),
-  });
-
-  async function onSubmit(data) {
-    try {
-      setLoading(true);
-      const response = await api.post("api/auth/register", data);
-      console.log(response);
-      setLoading(false);
-      toast.success(response.data.message);
-      navigate("/auth/login");
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
+  const loading = navigation.state === "submitting";
   return (
     <div className="flex justify-center items-center text-white bg-gradient-to-r from-[rgb(167,49,167)] from-25% to-[#7a4cc4]">
       <div className="bg-[#250933] flex flex-col justify-center items-center gap-8 p-10 my-4 rounded-2xl">
@@ -95,63 +88,65 @@ const Registration = () => {
 
         <h1 className="text-4xl">Register</h1>
         {searchParams.get("referrer") === "message-form" && <YourTurn />}
-        <form onSubmit={handleSubmit(onSubmit)}>
+
+        <Form method="post" noValidate>
           <div className="mb-5">
-            <label htmlFor="user-name" className="block mb-2  ">
+            <label htmlFor="username" className="block mb-2">
               Your Username
             </label>
             <Input
               type="text"
-              id="user-name"
+              id="username"
               placeholder="Enter your username"
-              {...register("username")}
-              error={errors.username?.message}
+              name="username"
+              error={errors.username}
             />
           </div>
+
           <div className="mb-5">
-            <label className="block mb-2" htmlFor="email">
+            <label htmlFor="email" className="block mb-2">
               Your Email
             </label>
             <Input
               type="email"
               id="email"
               placeholder="Enter your email"
-              {...register(
-                "email",
-                { required: "Email is required" },
-                { type: "email", message: "Invalid email" }
-              )}
-              error={errors.email?.message}
-            />{" "}
+              name="email"
+              error={errors.email}
+            />
           </div>
+
           <div className="mb-5">
-            <label className="block mb-2" htmlFor="password">
+            <label htmlFor="password" className="block mb-2">
               Password
             </label>
             <Input
               type="password"
               id="password"
               placeholder="Enter your password"
-              {...register("password")}
-              error={errors.password?.message}
+              name="password"
+              error={errors.password}
             />
           </div>
+
           <Button
             type="submit"
             className={`${
               loading ? "bg-gray-400 cursor-not-allowed" : "bg-purple-600"
             }`}
+            disabled={loading}
           >
             {loading ? "Registering..." : "Register Account"}
           </Button>
-        </form>
+        </Form>
+
         <a className="text-gray-500" href="#">
           Already Have an Account? Log in
         </a>
         <p className="text-sm">
           By using this service, you agree to our Privacy Policy, Terms of
-          Service and any <br />
-          related policies. <Link to="/disclaimer">(Check Disclaimer)</Link>
+          Service, and any related policies. <br />
+          <Link to="/disclaimer">(Check Disclaimer)</Link>
         </p>
       </div>
       <Toaster />

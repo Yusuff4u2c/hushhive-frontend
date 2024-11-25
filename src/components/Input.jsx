@@ -1,7 +1,7 @@
 import React from "react";
 
 const Input = React.forwardRef(
-  ({ className = "", error, onChange, ...props }, ref) => {
+  ({ className = "", error, name, onChange, ...props }, ref) => {
     return (
       <>
         <input
@@ -11,6 +11,7 @@ const Input = React.forwardRef(
           onChange={onChange}
           {...props}
           ref={ref}
+          name={name}
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
       </>
