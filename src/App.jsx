@@ -3,7 +3,7 @@ import Landing from "./pages/Landing";
 import Registration, { action as regAction } from "./pages/registration";
 import { AppProvider } from "./contexts/AppContext";
 import ErrorPage from "./error-page";
-import Login, { loginAction } from "./pages/log-in";
+import Login from "./pages/log-in";
 import Home from "./pages/Home";
 import Messages, { loader as messageLoader } from "./pages/Messages";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
     element: <AuthRoute />,
     children: [
       { path: "register", element: <Registration />, action: regAction },
-      { path: "login", element: <Login />, action: loginAction },
+      { path: "login", element: <Login /> },
     ],
   },
 
