@@ -67,8 +67,7 @@ const Login = () => {
             Recieve anonymous compliments from your friends <br /> and send
             anonymous messages to your friends for free.
           </p>
-          <form method="post" noValidate>
-            onSubmit={handleSubmit(onSubmit)}
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-5">
               <label htmlFor="user-name">Your Email</label> <br />
               <Input
@@ -80,6 +79,7 @@ const Login = () => {
                 error={errors.email?.message}
               />
             </div>
+
             <div className="mb-5">
               <label htmlFor="psw">Password</label> <br />
               <Input
