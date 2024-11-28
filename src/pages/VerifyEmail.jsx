@@ -36,7 +36,7 @@ function VerifyEmail() {
         error?.response?.data?.message || "Email verification failed"
       );
       setTimeout(() => {
-        location.navigate("/auth/login");
+        navigate("/auth/login");
       });
     });
 
