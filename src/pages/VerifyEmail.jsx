@@ -4,7 +4,8 @@ import toast from "react-hot-toast";
 import { set } from "react-hook-form";
 
 function VerifyEmail() {
-  const token = useSearchParams().get("token");
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
   const location = useLocation();
 
   api
