@@ -72,7 +72,7 @@ const Login = () => {
   useEffect(() => {
     if (!actionData) return;
     if (actionData?.success) {
-      toast.success("Registration Successful");
+      toast.success("Logged in Successfully");
       localStorage.setItem("accessToken", actionData.token);
       signUserIntoApp(actionData.user);
       navigate("/dashboard");

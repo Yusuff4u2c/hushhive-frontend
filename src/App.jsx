@@ -20,6 +20,7 @@ import AuthRoute from "./components/AuthRoute";
 import ChangePassword from "./pages/ChangePassword";
 import ChangeEmail from "./pages/ChangeEmail";
 import { Toaster } from "react-hot-toast";
+import VerifyEmail from "./pages/VerifyEmail";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
     children: [
       { path: "register", element: <Registration />, action: regAction },
       { path: "login", element: <Login />, action: loginAction },
+      { path: "verify-email", element: <VerifyEmail /> },
     ],
   },
   {

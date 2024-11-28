@@ -3,9 +3,7 @@ import useAuth from "../hooks/useAuth";
 
 const ProtectedRoute = () => {
   const { user } = useAuth();
-  const location = useLocation(); // "/messages"
-
-  // if its still loading
+  const location = useLocation();
 
   if (!user) {
     return (
