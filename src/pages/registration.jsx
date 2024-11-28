@@ -1,11 +1,19 @@
-import { useState } from "react";
-import { Form, Link, useNavigation, useSearchParams } from "react-router-dom";
+import {
+  Form,
+  Link,
+  useActionData,
+  useNavigate,
+  useNavigation,
+  useSearchParams,
+} from "react-router-dom";
+
 import toast, { Toaster } from "react-hot-toast";
 import logoIcon from "../assets/image/logo-icon.png";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import * as Yup from "yup";
 import api from "../data/api";
+import { useEffect } from "react";
 
 const regSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -24,25 +32,35 @@ export async function action({ request }) {
 
     const response = await api.post("/api/auth/register", data);
 
-    if (response.data.success) {
-      toast.success(response.data.message);
-      return { redirect: "/auth/login" };
-    } else {
+    if (!response.data.success) {
       throw new Error(response.data.message || "Registration failed");
     }
+
+    return { success: true };
   } catch (error) {
     if (error instanceof Yup.ValidationError) {
       const validationErrors = error.inner.reduce((acc, err) => {
         acc[err.path] = err.message;
         return acc;
       }, {});
-      return { errors: validationErrors };
-    } else {
-      toast.error(error.message || "An unexpected error occurred.");
+      return { success: false, errors: validationErrors };
+    }
+
+    if (error.response && error.response.data) {
       return {
-        errors: { form: error.message || "An unexpected error occurred." },
+        success: false,
+        errors: {
+          general: error.response.data.message || "An error occurred.",
+        },
       };
     }
+
+    return {
+      success: false,
+      errors: {
+        general: error.message || "An unexpected error occurred.",
+      },
+    };
   }
 }
 
@@ -75,10 +93,28 @@ const YourTurn = () => {
 };
 
 const Registration = () => {
-  const [errors, setErrors] = useState({});
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
   const loading = navigation.state === "submitting";
+  const actionData = useActionData();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!actionData) return;
+    if (actionData?.success) {
+      toast.success("Registration successful! Redirecting...");
+      navigate("/auth/login");
+    } else if (actionData?.errors) {
+      if (actionData.errors.general) {
+        toast.error(actionData.errors.general);
+      } else {
+        Object.values(actionData.errors).forEach((error) => {
+          toast.error(error);
+        });
+      }
+    }
+  }, [actionData]);
+
   return (
     <div className="flex justify-center items-center text-white bg-gradient-to-r from-[rgb(167,49,167)] from-25% to-[#7a4cc4]">
       <div className="bg-[#250933] flex flex-col justify-center items-center gap-8 p-10 my-4 rounded-2xl">
@@ -99,7 +135,7 @@ const Registration = () => {
               id="username"
               placeholder="Enter your username"
               name="username"
-              error={errors.username}
+              error={actionData?.errors?.username}
             />
           </div>
 
@@ -112,7 +148,7 @@ const Registration = () => {
               id="email"
               placeholder="Enter your email"
               name="email"
-              error={errors.email}
+              error={actionData?.errors?.email}
             />
           </div>
 
@@ -125,7 +161,7 @@ const Registration = () => {
               id="password"
               placeholder="Enter your password"
               name="password"
-              error={errors.password}
+              error={actionData?.errors?.password}
             />
           </div>
 
