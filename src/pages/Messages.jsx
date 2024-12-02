@@ -113,7 +113,7 @@ function Messages() {
             <button
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               disabled={page === 1}
-              className="p-2 w-20 bg-purple-700 rounded-xl disabled:opacity-50"
+              className="p-2 w-20 bg-purple-700 rounded-xl bg-gradient-to-r hover:bg-gradient-to-l transition-transform duration-1000 from-[rgb(212,39,160)] from-15% via-[#7a4cc4]  to-[#00dbde] disabled:opacity-50"
             >
               Previous
             </button>
@@ -127,18 +127,16 @@ function Messages() {
                 )
               }
               disabled={pagination?.page >= pagination?.totalPages}
-              className="p-2 w-20 bg-purple-700 rounded-xl disabled:opacity-50"
+              className="p-2 w-20 bg-purple-700 rounded-xl disabled:opacity-50 bg-gradient-to-r hover:bg-gradient-to-l transition-transform duration-1000 from-[rgb(212,39,160)] from-15% via-[#7a4cc4]  to-[#00dbde]"
             >
               Next
             </button>
           </div>
         </div>
         <Link to="/dashboard">
-          <Button className="w-24 rounded-xl">
-            <div className="flex justify-center items-center">
-              <FaLongArrowAltLeft /> Go Back
-            </div>
-          </Button>
+          <button className="p-2 w-20 bg-purple-700 rounded-xl disabled:opacity-50 bg-gradient-to-r hover:bg-gradient-to-l transition-transform duration-1000 from-[rgb(212,39,160)] from-15% via-[#7a4cc4]  to-[#00dbde] ">
+            Back
+          </button>
         </Link>
       </div>
     </div>
