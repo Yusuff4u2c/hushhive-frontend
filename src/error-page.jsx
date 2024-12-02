@@ -1,10 +1,23 @@
-import { Link, useRouteError } from "react-router-dom";
+import { Link, useNavigate, useRouteError } from "react-router-dom";
 import logoIcon from "./assets/image/logo-icon.png";
 import Button from "./components/Button";
+import useAuth from "./hooks/useAuth";
 
 const ErrorPage = () => {
   const error = useRouteError();
-  console.log(error);
+  const { signUserOutOfApp } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (error?.message === "Access Denied: No token provided") {
+      user = null;
+      signUserOutOfApp;
+      navigate("/auth/login");
+    }
+  }, [error, logout, navigate]);
+
+  const errorMessage =
+    error?.message || error?.statusText || "An unknown error occurred.";
 
   return (
     <div className="flex justify-center items-center text-white bg-gradient-to-r from-[rgb(167,49,167)] from-25% to-[#7a4cc4] min-h-screen px-4">
@@ -17,11 +30,7 @@ const ErrorPage = () => {
           />
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-center">Oops!</h1>
-        <p className="text-sm text-center">
-          {error
-            ? error.message || error.statusText
-            : `Something went wrong. We couldn't process your request. Please try again later or go back to the homepage.`}
-        </p>
+        <p className="text-sm text-center">{errorMessage}</p>
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
           <Link to="/dashboard" className="w-full sm:w-auto">
             <Button className="w-full sm:w-auto">

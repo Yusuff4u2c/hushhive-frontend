@@ -22,8 +22,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signUserOutOfApp = () => {
-    setUser(null);
     localStorage.removeItem("user");
+    console.log(user);
+
+    setUser(null);
   };
 
   const contextValue = useMemo(

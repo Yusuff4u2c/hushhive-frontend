@@ -14,20 +14,20 @@ import {
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
-import api from "../data/api";
+// import api from "../data/api";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { signUserOutOfApp, user } = useAuth();
+  const { signUserOutOfApp } = useAuth();
 
   async function handleLogOut() {
     try {
-      await api.post("/api/auth/logout", {});
+      // await api.post("/api/auth/logout", {});
       localStorage.removeItem("accessToken");
       signUserOutOfApp();
       console.log("Signed Out");
 
-      toast.success("Signed Out :", user);
+      toast.success("Signed Out Successfully");
       navigate("/auth/login");
     } catch (error) {
       const errorMessage =

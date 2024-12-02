@@ -1,24 +1,36 @@
-import { Link, useLoaderData, Form, useActionData } from "react-router-dom";
 import {
-  FaLongArrowAltLeft,
-  FaLongArrowAltRight,
-  FaAngleDown,
-} from "react-icons/fa";
-import Button from "../components/Button";
+  Link,
+  useLoaderData,
+  Form,
+  useActionData,
+  useNavigate,
+} from "react-router-dom";
+import { FaLongArrowAltLeft, FaLongArrowAltRight } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import api from "../data/api";
 import { toast } from "react-hot-toast";
+import Button from "../components/Button";
 
-export async function loader() {
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page");
+
   try {
-    const response = await api.get("/api/messages");
-    return response.data.messages;
+    const response = await api.get(`/api/messages?page=${page}`);
+
+    console.log(response.data);
+
+    return {
+      messages: response.data.messages,
+      pagination: response.data.pagination,
+    };
   } catch (error) {
     throw new Error(error.response?.data?.message || error.message);
   }
 }
 
+// Action function for message deletion
 export const action = async ({ params }) => {
   try {
     await api.post(`/api/messages/${params.id}`);
@@ -31,6 +43,7 @@ export const action = async ({ params }) => {
   }
 };
 
+// Button component
 const Btn = ({ className, title, onClick, ...others }) => (
   <div>
     <button
@@ -45,9 +58,15 @@ const Btn = ({ className, title, onClick, ...others }) => (
 );
 
 function Messages() {
-  const loaderMessages = useLoaderData();
+  const { messages: loaderMessages, pagination } = useLoaderData();
   const actionData = useActionData();
-  const [paragraphVisibility, setParagraphVisibility] = useState(false);
+  const [page, setPage] = useState(pagination?.page || 1);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate("?page=" + page);
+  }, [page]);
 
   useEffect(() => {
     if (actionData) {
@@ -90,33 +109,37 @@ function Messages() {
               </div>
             ))
           )}
-          <Button className="w-full mb-3">
-            <div className="flex justify-center gap-3 items-center">
-              View More Answers <FaLongArrowAltRight />
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              disabled={page === 1}
+              className="p-2 w-20 bg-purple-700 rounded-xl disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">
+              Page {pagination?.page || 1} of {pagination?.totalPages}
+            </span>
+            <button
+              onClick={() =>
+                setPage((prev) =>
+                  pagination?.page < pagination.totalPages ? prev + 1 : prev
+                )
+              }
+              disabled={pagination?.page >= pagination?.totalPages}
+              className="p-2 w-20 bg-purple-700 rounded-xl disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+        <Link to="/dashboard">
+          <Button className="w-24 rounded-xl">
+            <div className="flex justify-center items-center">
+              <FaLongArrowAltLeft /> Go Back
             </div>
           </Button>
-          <Link to="/dashboard">
-            <Button className="w-full my-3">
-              <div className="flex justify-center gap-3 items-center">
-                <FaLongArrowAltLeft /> Go Back
-              </div>
-            </Button>
-          </Link>
-          <Btn
-            onClick={() => setParagraphVisibility((prev) => !prev)}
-            title={
-              <div className="flex justify-center gap-3 items-center">
-                HushHive Messages <FaAngleDown />
-              </div>
-            }
-          />
-          {paragraphVisibility && (
-            <p className="text-start mt-6">
-              HushHive is an interactive Dare Game, where you can compliment and
-              get complimented by your friends...
-            </p>
-          )}
-        </div>
+        </Link>
       </div>
     </div>
   );
